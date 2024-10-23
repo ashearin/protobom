@@ -322,8 +322,8 @@ message Serializer {
   string format = 1; // The original format of the SBOM document (e.g., CycloneDX, SPDX).
   string hash = 2; // The original hash of the SBOM document to ensure integrity.
   int64 size = 3; // The original size of the SBOM document in bytes.
-  string path = 4; // The original file path of the SBOM document.
-  string uri = 5; // The original URI of the SBOM document.
+  // The original URI of the SBOM document.
+  optional string uri = 4;
 }
 
 // Metadata encapsulates document-related details about the Software Bill of Materials (SBOM) document.
