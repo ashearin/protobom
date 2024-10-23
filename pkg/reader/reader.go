@@ -141,7 +141,7 @@ func (r *Reader) ParseStreamWithOptions(f io.ReadSeeker, o *Options) (*sbom.Docu
 	}
 
 	if doc.Metadata != nil {
-		doc.Metadata.Serializer, err = setOriginInfo(f, format)
+		doc.Metadata.SourceData, err = setSourceData(f, format)
 		if err != nil {
 			return nil, fmt.Errorf("setting origin info: %w", err)
 		}
@@ -188,24 +188,24 @@ func (r *Reader) RetrieveWithOptions(id string, o *Options) (*sbom.Document, err
 	return doc, nil
 }
 
-func setOriginInfo(f io.ReadSeeker, format formats.Format) (*sbom.Serializer, error) {
+func setSourceData(f io.ReadSeeker, format formats.Format) (*sbom.SourceData, error) {
 	_, err := f.Seek(0, io.SeekStart)
 	if err != nil {
-		return &sbom.Serializer{}, fmt.Errorf("seeking beginning of file: %w", err)
+		return &sbom.SourceData{}, fmt.Errorf("seeking beginning of file: %w", err)
 	}
 
 	docBytes, err := io.ReadAll(f)
 	if err != nil {
-		return &sbom.Serializer{}, fmt.Errorf("reading file bytes: %w", err)
+		return &sbom.SourceData{}, fmt.Errorf("reading file bytes: %w", err)
 	}
 
 	hash := sha256.Sum256(docBytes)
 	docLength := len(docBytes)
-	serializer := &sbom.Serializer{
+	SourceData := &sbom.SourceData{
 		Format: string(format),
 		Hash:   string(hash[:]),
 		Size:   int64(docLength),
 	}
 
-	return serializer, nil
+	return SourceData, nil
 }

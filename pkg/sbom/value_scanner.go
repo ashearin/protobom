@@ -86,11 +86,11 @@ func (x *Property) Scan(src any) error {
 	return scan(src, x)
 }
 
-func (x *Serializer) Value() (driver.Value, error) {
+func (x *SourceData) Value() (driver.Value, error) {
 	return value(x)
 }
 
-func (x *Serializer) Scan(src any) error {
+func (x *SourceData) Scan(src any) error {
 	return scan(src, x)
 }
 

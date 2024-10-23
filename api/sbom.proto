@@ -317,15 +317,6 @@ message ExternalReference {
   }
 }
 
-// Serializer message encapsulates additional metadata related to the original SBOM document.
-message Serializer {
-  string format = 1; // The original format of the SBOM document (e.g., CycloneDX, SPDX).
-  string hash = 2; // The original hash of the SBOM document to ensure integrity.
-  int64 size = 3; // The original size of the SBOM document in bytes.
-  // The original URI of the SBOM document.
-  optional string uri = 4;
-}
-
 // Metadata encapsulates document-related details about the Software Bill of Materials (SBOM) document.
 // It includes information such as the document's identifier, version, authorship, creation date,
 // associated tools, and document types.
@@ -355,8 +346,8 @@ message Metadata {
   // Types categorizing the document based on its purpose or stage in the software development lifecycle.
   repeated DocumentType documentTypes = 8;
 
-  // New field for preserving original format information and additional metadata
-  Serializer serializer = 9; // Metadata attached by the serialization process
+  // Field for preserving original format information and additional metadata
+  SourceData source_data = 9;
 }
 
 // Node represents a central element within the Software Bill of Materials (SBOM) graph,
@@ -517,6 +508,21 @@ message Property {
 
   // Property value
   string data = 2;
+}
+
+// SourceData message encapsulates additional metadata related to the original SBOM document.
+message SourceData {
+  // The original format of the SBOM document (e.g., CycloneDX, SPDX).
+  string format = 1;
+
+  // The original hash of the SBOM document to ensure integrity.
+  string hash = 2;
+
+  // The original size of the SBOM document in bytes.
+  int64 size = 3;
+
+  // The original URI of the SBOM document.
+  optional string uri = 4;
 }
 
 // Tool represents a software tool used in the creation or processing of the Software Bill of Materials (SBOM) document.
