@@ -6,6 +6,7 @@ package reader
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"os"
@@ -139,6 +140,13 @@ func (r *Reader) ParseStreamWithOptions(f io.ReadSeeker, o *Options) (*sbom.Docu
 		return nil, fmt.Errorf("unserializing: %w", err)
 	}
 
+	if doc.Metadata != nil {
+		doc.Metadata.Serializer, err = setOriginInfo(f, format)
+		if err != nil {
+			return nil, fmt.Errorf("setting origin info: %w", err)
+		}
+	}
+
 	return doc, err
 }
 
@@ -178,4 +186,26 @@ func (r *Reader) RetrieveWithOptions(id string, o *Options) (*sbom.Document, err
 	}
 
 	return doc, nil
+}
+
+func setOriginInfo(f io.ReadSeeker, format formats.Format) (*sbom.Serializer, error) {
+	_, err := f.Seek(0, io.SeekStart)
+	if err != nil {
+		return &sbom.Serializer{}, fmt.Errorf("seeking beginning of file: %w", err)
+	}
+
+	docBytes, err := io.ReadAll(f)
+	if err != nil {
+		return &sbom.Serializer{}, fmt.Errorf("reading file bytes: %w", err)
+	}
+
+	hash := sha256.Sum256(docBytes)
+	docLength := len(docBytes)
+	serializer := &sbom.Serializer{
+		Format: string(format),
+		Hash:   string(hash[:]),
+		Size:   int64(docLength),
+	}
+
+	return serializer, nil
 }
